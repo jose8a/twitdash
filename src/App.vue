@@ -7,13 +7,11 @@
 
 <script>
 import NavHeader from './components/NavHeader';
-import User from './components/User';
 
 export default {
   name: 'app',
   components: {
     NavHeader,
-    User,
   },
 };
 </script>
