@@ -113,4 +113,24 @@ button {
   justify-content: space-between;
 }
 
+.cached-item {
+  background-color: var(--color-secondary);
+  border: 1px solid var(--color-grey-mid);
+  color: var(--color-grey-dark);
+  opacity: 0.7;
+  height: 3em;
+  width: auto;
+  padding-left: 0.5em;
+}
+
+.subheading-4 {
+  background-color: var(--color-grey-mid);
+  opacity: 0.6;
+  border: 1px solid var(--color-grey-mid);
+  color: yellow;
+}
+
+
+
+
 

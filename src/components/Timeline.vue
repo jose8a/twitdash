@@ -5,7 +5,14 @@
         <button v-on:click="getTwits('md')">5 Days</button>
         <button v-on:click="getTwits('mt')">600 Tweets</button>
         <!-- button v-on:click="getTwits('sid')">Since ID</button -->
+        <button v-on:click="saveTwits">Save Tweets</button>
       </div>
+      <div id="cached-list">
+        <div class="subheading-4">Cached</div>
+          <router-link v-for="tl in cachedItems" :to="listPath(tl)" class="cached-item" tag="div" replace>
+            {{ tl }}
+          </router-link>
+      </div> <!-- end:cached-list -->
       <div class="cardlist">
           <div v-for="twit in filteredTwits" class="card timeline-el">
             <a v-bind:href="twit.url" class="twit-el" :id="twit.id">
@@ -54,14 +61,50 @@ export default {
     }
   },
   computed: {
+    cachedItems() {
+      return Object.keys(this.savedTwits);
+    },
     filteredTwits() {
-      return this.twits;
+      const fTwits = [];
+
+      if (this.filterType === 'CLEAR') {
+        console.log(this.twits);
+        return this.twits;
+      }
+
+      // --- const regex = /design/i;
+      const regex = new RegExp(this.filterType, 'i');
+      this.twits.forEach((twit) => {
+        if (regex.test(twit.content)) {
+          fTwits.push(twit);
+        }
+      });
+      console.log(fTwits);
+      return fTwits;
     },
   },
   methods: {
+    listPath(listname) {
+      return { name: 'timeline', params: { listname: `${listname}` } };
+    },
     getDate(twit) {
       const [weekDay, month, numDay, rest] = [...twit.createdAt.split(' ')];
       return `${weekDay} ${month} ${numDay} ${rest}`;
+    },
+    saveTwits() {
+      const listname = this.$route.params.listname;
+
+      const savedTimelines = JSON.parse(localStorage.getItem(this.storageKey));
+      savedTimelines[listname] = this.twits.slice();
+      this.savedTwits = { ...savedTimelines };
+
+      const twits = JSON.stringify(this.savedTwits);
+      console.log('Saving Twits ...');
+      localStorage.setItem(this.storageKey, twits);
+
+      Object.keys(this.savedTwits).forEach((item) => {
+        console.log(`timeline: ${item}`);
+      });
     },
     getTwits(type) {
       const listname = this.$route.params.listname;
