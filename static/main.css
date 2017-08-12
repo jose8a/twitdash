@@ -75,4 +75,42 @@ button {
   grid-template-rows: 2fr 1fr;
 }
 
+#timeline {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2fr 6fr;
+  grid-template-rows: min-content auto;
+  grid-template-areas:  "nav nav"
+                        "side tweets";
+}
+
+.data-actions {
+  grid-area: nav;
+}
+
+#cached-list {
+  grid-area: side;
+  width: 100%;
+}
+
+.cardlist {
+  grid-area: tweets;
+}
+
+.content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.1em;
+  padding-bottom: 0.75em;
+  line-height: 1.3em;
+}
+
+.content-sub {
+  font-size: 0.65em;
+  align-self: end;
+  color: yellow;
+  display: flex;
+  justify-content: space-between;
+}
+
 
