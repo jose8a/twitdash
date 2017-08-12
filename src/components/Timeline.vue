@@ -9,9 +9,13 @@
       </div>
       <div id="cached-list">
         <div class="subheading-4">Cached</div>
-          <router-link v-for="tl in cachedItems" :to="listPath(tl)" class="cached-item" tag="div" replace>
-            {{ tl }}
-          </router-link>
+        <router-link v-for="tl in cachedItems" :to="listPath(tl)" class="cached-item" tag="div" :key="tl">
+          {{ tl }}
+        </router-link>
+        <div class="subheading-4">Tags</div>
+        <div id="filters">
+          <button v-for="filter in filterTags" v-on:click="filterTwits(filter)">{{ filter }}</button>
+        </div>
       </div> <!-- end:cached-list -->
       <div class="cardlist">
           <div v-for="twit in filteredTwits" class="card timeline-el">
@@ -29,6 +33,7 @@
 
 <script>
 /* eslint-disable no-console */
+/* eslint-disable object-shorthand */
 
 import axios from 'axios';
 
@@ -43,8 +48,58 @@ export default {
       storageKey: 'savedTimelines',
       twits: [],
       savedTwits: {},
+      filterList: [
+        'CLEAR',
+        'design',
+        'ux',
+        'ui',
+        'css',
+        'svg',
+        'js',
+        'javascript',
+        'frontend',
+        'develop',
+        'webdev',
+        'vue',
+        'd3',
+        'responsive',
+        'theme',
+        'color',
+        'anima',
+        'icon',
+        'logo',
+        'code',
+        'art',
+      ],
+      filterType: 'none',
     };
   },
+  beforeRouteUpdate(to, from, next) {
+    // --- console.log(`ROUTE::UPDATE -- ${from} ----> ${to}`);
+    // --- console.log(to);
+    // --- const listname = this.$route.params.listname;
+
+    const listname = to.params.listname;
+    console.log(`LISTNAME: ${listname}`);
+
+    // ensure there is at least an empty 'timelines cache' available
+    if (!localStorage.getItem(this.storageKey)) {
+      localStorage.setItem(this.storageKey, JSON.stringify({}));
+    }
+
+    // If there is a cached timeline for this route, display it's contents
+    const savedTimelines = JSON.parse(localStorage.getItem(this.storageKey));
+    if (savedTimelines[listname] && savedTimelines[listname].length > 0) {
+      this.savedTwits = { ...savedTimelines };
+      this.twits = this.savedTwits[listname].slice();
+    }
+    next();
+  },
+  // --- watch: {
+  // ---   '$route'(to, from) {
+  // ---     console.log(`${from} ----> ${to}`);
+  // ---   },
+  // --- },
   mounted() {
     const listname = this.$route.params.listname;
 
@@ -63,6 +118,9 @@ export default {
   computed: {
     cachedItems() {
       return Object.keys(this.savedTwits);
+    },
+    filterTags() {
+      return this.filterList;
     },
     filteredTwits() {
       const fTwits = [];
@@ -86,6 +144,9 @@ export default {
   methods: {
     listPath(listname) {
       return { name: 'timeline', params: { listname: `${listname}` } };
+    },
+    filterTwits(filter) {
+      this.filterType = filter;
     },
     getDate(twit) {
       const [weekDay, month, numDay, rest] = [...twit.createdAt.split(' ')];
