@@ -11,27 +11,16 @@ export default new Router({
       path: '/',
       name: 'home',
       component: ListIndex,
-      children: [
-        {
-          path: '/lists',
-          name: 'lists',
-          component: ListIndex,
-        },
-        {
-          path: '/:listname',
-          component: Timeline,
-        },
-      ],
-    },
-    {
-      path: '/lists',
-      name: 'lists',
-      component: ListIndex,
     },
     {
       path: '/lists/:listname',
       name: 'timeline',
       component: Timeline,
+    },
+    {
+      path: '/lists',
+      name: 'lists',
+      component: ListIndex,
     },
   ],
 });
