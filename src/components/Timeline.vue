@@ -9,24 +9,29 @@
       </div>
       <div id="cached-list">
         <div class="subheading-4">Cached</div>
-        <router-link v-for="tl in cachedItems" :to="listPath(tl)" class="cached-item" tag="div" :key="tl">
+        <router-link v-for="tl in cachedItems" :to="listPath(tl)"
+                    class="cached-item" v-bind:class="{active: (tl === activeList)}" tag="div" :key="tl">
           {{ tl }}
         </router-link>
         <div class="subheading-4">Tags</div>
         <div id="filters">
-          <button v-for="filter in filterTags" v-on:click="filterTwits(filter)">{{ filter }}</button>
+          <button v-for="filter in filterTags"
+                  v-on:click="filterTwits(filter)" v-bind:class="{active: (filter === filterType)}">{{ filter }}</button>
         </div>
+        <div v-on:click="urlOnly" v-bind:class="urlonly" id='url-only'>url-only</div>
+        <div v-on:click="remTweets" v-bind:class="removetweets" id='rem-tweets'>non-twitter</div>
       </div> <!-- end:cached-list -->
       <div class="cardlist">
-          <div v-for="twit in filteredTwits" class="card timeline-el">
-            <a v-bind:href="twit.url" class="twit-el" :id="twit.id">
-              <div class="content">{{twit.content}}</div>
-              <div class="content-sub">
-                <div class="twit-owner">{{getDate(twit)}}</div>
-                <div class="twit-date">{{twit.owner + ' -- @' + twit.ownerAlias}}</div>
-              </div>
-            </a>
-          </div>
+        <div class="subheading-4" id="filterMsg">{{ `Num Results: ${numFilteredTwits}` }}</div>
+        <div v-for="twit in filteredTwits" class="card timeline-el">
+          <a v-bind:href="twit.url" class="twit-el" :id="twit.id">
+            <div class="content">{{twit.content}}</div>
+            <div class="content-sub">
+              <div class="twit-owner">{{getDate(twit)}}</div>
+              <div class="twit-date">{{twit.owner + ' -- @' + twit.ownerAlias}}</div>
+            </div>
+          </a>
+        </div><!-- end:filteredTwits -->
       </div><!-- end:cardlist -->
     </div><!-- end:#timeline -->
 </template>
@@ -46,6 +51,7 @@ export default {
   data() {
     return {
       storageKey: 'savedTimelines',
+      storageFilter: 'activeFilter',
       twits: [],
       savedTwits: {},
       filterList: [
@@ -71,9 +77,15 @@ export default {
         'code',
         'art',
       ],
-      filterType: 'none',
+      filterType: 'CLEAR',
+      filterUrlOnly: true,
+      filterRemTweets: true,
+      urlonly: 'active',
+      removetweets: 'active',
+      numFilteredTwits: 0,
     };
   },
+  // On a route update to
   beforeRouteUpdate(to, from, next) {
     // --- console.log(`ROUTE::UPDATE -- ${from} ----> ${to}`);
     // --- console.log(to);
@@ -95,11 +107,6 @@ export default {
     }
     next();
   },
-  // --- watch: {
-  // ---   '$route'(to, from) {
-  // ---     console.log(`${from} ----> ${to}`);
-  // ---   },
-  // --- },
   mounted() {
     const listname = this.$route.params.listname;
 
@@ -107,6 +114,13 @@ export default {
     if (!localStorage.getItem(this.storageKey)) {
       localStorage.setItem(this.storageKey, JSON.stringify({}));
     }
+
+    // ensure there is at least an empty 'activeFilter' available
+    if (!localStorage.getItem(this.storageFilter)) {
+      localStorage.setItem(this.storageFilter, 'CLEAR');
+    }
+
+    this.filterType = localStorage.getItem(this.storageFilter);
 
     // If there is a cached timeline for this route, display it's contents
     const savedTimelines = JSON.parse(localStorage.getItem(this.storageKey));
@@ -116,6 +130,9 @@ export default {
     }
   },
   computed: {
+    activeList() {
+      return this.$route.path.split('/').pop();
+    },
     cachedItems() {
       return Object.keys(this.savedTwits);
     },
@@ -123,21 +140,35 @@ export default {
       return this.filterList;
     },
     filteredTwits() {
-      const fTwits = [];
+      let fTwits = [];
 
-      if (this.filterType === 'CLEAR') {
-        console.log(this.twits);
-        return this.twits;
-      }
+      // --- if (this.filterType === 'CLEAR') {
+      // ---   console.log(this.twits);
+      // ---   return this.twits;
+      // --- }
 
       // --- const regex = /design/i;
       const regex = new RegExp(this.filterType, 'i');
-      this.twits.forEach((twit) => {
-        if (regex.test(twit.content)) {
-          fTwits.push(twit);
-        }
-      });
+      const invalidUrlRegex = new RegExp('#NONE', 'i');
+      const isTwitterUrl = new RegExp('twitter.com', 'i');
+      const removeEmptyUrl = url => invalidUrlRegex.test(url) && this.filterUrlOnly;
+      const removeTwitterUrl = url => isTwitterUrl.test(url) && this.filterRemTweets;
+
+      if (this.filterType === 'CLEAR') {
+        console.log(this.twits);
+        fTwits = this.twits;
+      } else {
+        this.twits.forEach((twit) => {
+          if (removeEmptyUrl(twit.url) || removeTwitterUrl(twit.url)) {
+            console.warn(`Removed: ${twit.id} -- ${twit.url}`);
+          } else if (regex.test(twit.content)) {
+            fTwits.push(twit);
+          }
+        });
+      }
+
       console.log(fTwits);
+      this.numFilteredTwits = fTwits.length;
       return fTwits;
     },
   },
@@ -146,7 +177,19 @@ export default {
       return { name: 'timeline', params: { listname: `${listname}` } };
     },
     filterTwits(filter) {
+      console.log(`old filter: ${this.storageFilter} ===> ${filter}`);
+      localStorage.setItem(this.storageFilter, filter);
       this.filterType = filter;
+    },
+    urlOnly() {
+      this.filterUrlOnly = !this.filterUrlOnly;
+      this.urlonly = this.urlonly === 'active' ? '' : 'active';
+      this.filterType = 'url-only';
+    },
+    remTweets() {
+      this.filterRemTweets = !this.filterRemTweets;
+      this.removetweets = this.removetweets === 'active' ? '' : 'active';
+      this.filterType = 'rem-tweets';
     },
     getDate(twit) {
       const [weekDay, month, numDay, rest] = [...twit.createdAt.split(' ')];
