@@ -1,14 +1,17 @@
 :root {
-  --color-almost-black: #0f0f0f;
-  --color-grey-dark:    #222222;
-  --color-grey-mid:     #777777;
-  --color-grey-light:   #cccccc;
-  --color-primary-100:  #F0F4C3;
-  --color-primary-400:  #D4E157;
-  --color-primary-700:  #AFB42B;
-  --color-accent-200:   #EEFF41;
-  --color-accent-700:   #AEEA00;
-  --color-text-grey:    #d8d8d8;
+  --color-almost-black:   #0f0f0f;
+  --color-grey-dark:      #222222;
+  --color-grey-mid:       #777777;
+  --color-grey-light:     #cccccc;
+  --color-primary-100:    #F0F4C3;
+  --color-primary-400:    #D4E157;
+  --color-primary-700:    #AFB42B;
+  --color-accent-200:     #EEFF41;
+  --color-accent-700:     #AEEA00;
+  --color-complement-900: #1A237E;
+  --color-complement-600: #3949AB;
+  --color-complement-400: #5C6BC0;
+  --color-text-grey:      #d8d8d8;
 }
 
 body {
@@ -50,6 +53,10 @@ button {
   text-align: center;
   padding: 0;
   font-size: 2em;
+}
+
+.data-actions button {
+  font-size: 1em;
 }
 
 .cardlist {
@@ -114,6 +121,9 @@ button {
   justify-content: space-between;
 }
 
+
+#url-only,
+#rem-tweets,
 .cached-item {
   background-color: var(--color-primary-400);
   border: 1px solid var(--color-grey-mid);
@@ -145,10 +155,26 @@ button {
 }
 
 .subheading-4 {
+  border: 1px solid var(--color-grey-mid);
   background-color: var(--color-grey-mid);
   opacity: 0.6;
-  border: 1px solid var(--color-grey-mid);
   color: yellow;
+  padding-left: 5%;
 }
+
+.router-link-exact-active,
+#filters button.active,
+#url-only.active,
+#rem-tweets.active {
+  background-color: var(--color-complement-400);
+  color: var(--color-accent-100);
+  opacity: 0.5;
+}
+
+button:hover {
+  background-color: var(--color-complement-600);
+  opacity: 0.7;
+}
+
 
 

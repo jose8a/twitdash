@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <nav-header></nav-header>
-    <h3>{{ getPath }}</h3>
+    <h3>{{ `${getPath} -- ${activeList}` }}</h3>
     <router-view></router-view>
   </div>
 </template>
@@ -15,6 +15,9 @@ export default {
     NavHeader,
   },
   computed: {
+    activeList() {
+      return this.$route.path.split('/').pop();
+    },
     getPath() {
       // --- return this.$route.path;
       if (this.$route.path === '/') {
