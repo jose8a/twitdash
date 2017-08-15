@@ -85,6 +85,8 @@ export default {
       urlonly: 'active',
       removetweets: 'active',
       numFilteredTwits: 0,
+      bookmarksKey: 'bookmarks',
+      bookmarks: null,
     };
   },
   // On a route update to
@@ -122,7 +124,13 @@ export default {
       localStorage.setItem(this.storageFilter, 'CLEAR');
     }
 
+    // ensure there is at least an empty 'bookmarks' available
+    if (!localStorage.getItem(this.bookmarksKey)) {
+      localStorage.setItem(this.bookmarksKey, JSON.stringify([]));
+    }
+
     this.filterType = localStorage.getItem(this.storageFilter);
+    this.bookmarks = JSON.parse(localStorage.getItem(this.bookmarksKey));
 
     // If there is a cached timeline for this route, display it's contents
     const savedTimelines = JSON.parse(localStorage.getItem(this.storageKey));
@@ -199,6 +207,10 @@ export default {
     },
     bookit(twit) {
       console.log(`BOOKIT: ${twit.id} -- ${twit.url}`);
+      this.bookmarks.push(twit);
+      localStorage.setItem(this.bookmarksKey, JSON.stringify(this.bookmarks));
+
+      console.log(localStorage.getItem(this.bookmarksKey));
     },
     saveTwits() {
       const listname = this.$route.params.listname;
