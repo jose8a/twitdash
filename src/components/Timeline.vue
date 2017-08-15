@@ -9,14 +9,15 @@
       </div>
       <div id="cached-list">
         <div class="subheading-4">Cached</div>
-        <router-link v-for="tl in cachedItems" :to="listPath(tl)"
-                    class="cached-item" v-bind:class="{active: (tl === activeList)}" tag="div" :key="tl">
+        <router-link  v-for="tl in cachedItems" :to="listPath(tl)" class="cached-item"
+                      v-bind:class="{active: (tl === activeList)}" tag="div" :key="tl">
           {{ tl }}
         </router-link>
         <div class="subheading-4">Tags</div>
         <div id="filters">
           <button v-for="filter in filterTags"
-                  v-on:click="filterTwits(filter)" v-bind:class="{active: (filter === filterType)}">{{ filter }}</button>
+                  v-on:click="filterTwits(filter)"
+                  v-bind:class="{active: (filter === filterType)}">{{ filter }}</button>
         </div>
         <div v-on:click="urlOnly" v-bind:class="urlonly" id='url-only'>url-only</div>
         <div v-on:click="remTweets" v-bind:class="removetweets" id='rem-tweets'>non-twitter</div>
@@ -26,11 +27,12 @@
         <div v-for="twit in filteredTwits" class="card timeline-el">
           <a v-bind:href="twit.url" class="twit-el" :id="twit.id">
             <div class="content">{{twit.content}}</div>
-            <div class="content-sub">
-              <div class="twit-owner">{{getDate(twit)}}</div>
-              <div class="twit-date">{{twit.owner + ' -- @' + twit.ownerAlias}}</div>
-            </div>
           </a>
+            <div class="content-sub">
+              <div class="twit-date">{{getDate(twit)}}</div>
+              <div class="twit-owner">{{twit.owner + ' -- @' + twit.ownerAlias}}</div>
+              <div  v-on:click="bookit({id: twit.id, url: twit.url, content: twit.content})" class="bookit">&#9829;</div>
+            </div>
         </div><!-- end:filteredTwits -->
       </div><!-- end:cardlist -->
     </div><!-- end:#timeline -->
@@ -194,6 +196,9 @@ export default {
     getDate(twit) {
       const [weekDay, month, numDay, rest] = [...twit.createdAt.split(' ')];
       return `${weekDay} ${month} ${numDay} ${rest}`;
+    },
+    bookit(twit) {
+      console.log(`BOOKIT: ${twit.id} -- ${twit.url}`);
     },
     saveTwits() {
       const listname = this.$route.params.listname;
