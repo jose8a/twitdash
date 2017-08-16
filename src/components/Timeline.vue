@@ -43,6 +43,7 @@
 /* eslint-disable object-shorthand */
 
 import axios from 'axios';
+// --- import cheerio from 'cheerio';
 
 const http = axios.create({
   baseURL: 'http://localhost:5566/',
@@ -206,11 +207,15 @@ export default {
       return `${weekDay} ${month} ${numDay} ${rest}`;
     },
     bookit(twit) {
-      console.log(`BOOKIT: ${twit.id} -- ${twit.url}`);
-      this.bookmarks.push(twit);
-      localStorage.setItem(this.bookmarksKey, JSON.stringify(this.bookmarks));
+      // DEBUG --- console.log(`BOOKIT: ${twit.id} -- ${twit.url}`);
+      // DEBUG --- console.log(localStorage.getItem(this.bookmarksKey));
 
-      console.log(localStorage.getItem(this.bookmarksKey));
+      http({ method: 'post', url: 'meta', data: { url: twit.url, content: twit.content } })
+        .then((response) => {
+          console.log(response.data.meta);
+          this.bookmarks.push(response.data.meta);
+          localStorage.setItem(this.bookmarksKey, JSON.stringify(this.bookmarks));
+        });
     },
     saveTwits() {
       const listname = this.$route.params.listname;
