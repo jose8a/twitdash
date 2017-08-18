@@ -11,7 +11,7 @@
         <div class="subheading-4">Cached</div>
         <router-link  v-for="tl in cachedItems" :to="listPath(tl)" class="cached-item"
                       v-bind:class="{active: (tl === activeList)}" tag="div" :key="tl">
-          {{ tl }}
+          {{ tl.replace(/-/g, ' ') }}
         </router-link>
         <div class="subheading-4">Tags</div>
         <div id="filters">
@@ -19,6 +19,7 @@
                   v-on:click="filterTwits(filter)"
                   v-bind:class="{active: (filter === filterType)}">{{ filter }}</button>
         </div>
+        <div class="subheading-4" id="filterMsg">Misc Filters</div>
         <div v-on:click="urlOnly" v-bind:class="urlonly" id='url-only'>url-only</div>
         <div v-on:click="remTweets" v-bind:class="removetweets" id='rem-tweets'>non-twitter</div>
       </div> <!-- end:cached-list -->

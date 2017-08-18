@@ -1,5 +1,6 @@
 :root {
   --color-almost-black:   #0f0f0f;
+  --color-almost-white:   #f0f0f0;
   --color-grey-dark:      #222222;
   --color-grey-mid:       #777777;
   --color-grey-light:     #cccccc;
@@ -172,6 +173,11 @@ button {
   height: 3em;
   width: auto;
   padding-left: 0.5em;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  text-transform: capitalize;
+  cursor: pointer;
 }
 
 #filters {
@@ -188,7 +194,6 @@ button {
   border: 1px solid var(--color-grey-light);
   color: var(--color-grey-dark);
   opacity: 0.7;
-  /* border: 1px solid var(--color-secondary); */
   padding: 1em 1.5em;
   text-align: center;
   font-size: 0.65em;
@@ -206,14 +211,26 @@ button {
 #filters button.active,
 #url-only.active,
 #rem-tweets.active {
-  background-color: var(--color-complement-400);
-  color: var(--color-accent-100);
-  opacity: 0.5;
+  background-color: var(--color-accent-700);
+  /* border: 0.5px solid var(--color-complement-400); */
+  color: var(--color-almost-black);
+  opacity: 0.4;
+}
+
+#url-only:hover,
+#rem-tweets:hover,
+.cached-item:hover,
+#filters button:hover {
+  background-color: var(--color-accent-700);
+  color: var(--color-complement-600);
+  opacity: 0.7;
+  cursor: pointer;
 }
 
 button:hover {
   background-color: var(--color-complement-600);
   opacity: 0.7;
+  cursor: pointer;
 }
 
 
